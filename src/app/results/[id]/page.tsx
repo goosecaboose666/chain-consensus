@@ -143,33 +143,33 @@ export default function AuditResultsPage({ params }: { params: Promise<{ id: str
             </Card>
           </div>
 
-          {/* Free Findings */}
+          {/* Key Findings */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold flex items-center gap-2">
+            <h2 className="text-xl font-bold flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-primary" />
-              Top Findings Summary
-            </h3>
-            <Card className="shadow-sm">
+              Consensus Findings
+            </h2>
+            <Card>
               <CardContent className="p-0">
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion className="w-full">
                   <AccordionItem value="item-1" className="border-b-0 px-6">
-                    <AccordionTrigger className="hover:no-underline py-6">
+                    <AccordionTrigger className="hover:no-underline py-4">
                       <div className="flex items-center gap-4 text-left">
-                        <Badge variant="secondary" className="bg-yellow-500/15 text-yellow-700 hover:bg-yellow-500/25 border-transparent shadow-none">Optimization</Badge>
-                        <span className="font-medium">Use `external` instead of `public` for gas savings</span>
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Info</Badge>
+                        <span className="font-medium">Gas Optimization: Use <code>external</code> visibility</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="pb-4 text-muted-foreground leading-relaxed">
-                      Several functions (e.g., <code>balanceOf</code>, <code>transfer</code>) are currently marked as <code>public</code> but are never called internally by the contract.
-                      Changing their visibility to <code>external</code> can save gas when called from externally owned accounts (EOAs) or other contracts.
+                      All 3 models identified that several functions (including <code>balanceOf</code> and <code>totalSupply</code>) are marked as <code>public</code> but are never called internally.
+                      Changing these to <code>external</code> will reduce gas costs for callers by avoiding unnecessary copying of arguments to memory.
                     </AccordionContent>
                   </AccordionItem>
-                  <div className="border-t mx-6"></div>
+                  <div className="h-px bg-muted mx-6" />
                   <AccordionItem value="item-2" className="border-b-0 px-6">
-                    <AccordionTrigger className="hover:no-underline py-6">
+                    <AccordionTrigger className="hover:no-underline py-4">
                       <div className="flex items-center gap-4 text-left">
-                        <Badge variant="secondary" className="bg-blue-500/15 text-blue-700 hover:bg-blue-500/25 border-transparent shadow-none">Best Practice</Badge>
-                        <span className="font-medium">Floating Pragma detected</span>
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Info</Badge>
+                        <span className="font-medium">Floating Pragma used</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="pb-4 text-muted-foreground leading-relaxed">
@@ -255,6 +255,7 @@ export default function AuditResultsPage({ params }: { params: Promise<{ id: str
               </CardContent>
             </Card>
           )}
+
         </div>
       </main>
 
