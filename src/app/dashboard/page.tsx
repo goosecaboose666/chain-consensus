@@ -96,8 +96,8 @@ export default function DashboardPage() {
               </div>
               <div className="relative w-64">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <input
-                  placeholder="Search address..."
+                <input 
+                  placeholder="Search address..." 
                   className="pl-8 h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 />
               </div>
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          <Badge
+                          <Badge 
                             variant={audit.status === 'Completed' ? 'default' : 'outline'}
                             className={audit.status === 'Completed' ? 'bg-green-100 text-green-800 border-none' : 'animate-pulse'}
                           >

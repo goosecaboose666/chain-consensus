@@ -35,7 +35,7 @@ export default function Home() {
                   Multi-Model AI Smart Contract Auditing
                 </h1>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                  Three independent AI models. One unanimous verdict.
+                  Three independent AI models. One unanimous verdict. 
                   Dramatically reduce false positives and catch more exploits before deployment.
                 </p>
               </div>
@@ -58,7 +58,7 @@ export default function Home() {
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Unanimous Consensus</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Single-model AI audits often hallucinate or miss subtle edge cases.
+                  Single-model AI audits often hallucinate or miss subtle edge cases. 
                   ChainConsensus uses a multi-layered approach to ensure production-grade security.
                 </p>
               </div>

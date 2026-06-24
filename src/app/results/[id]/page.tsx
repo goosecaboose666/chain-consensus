@@ -4,53 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, AlertCircle, CheckCircle2, Zap, Lock, Info, ExternalLink, BarChart3, Loader2 } from "lucide-react";
+import { ShieldCheck, AlertCircle, CheckCircle2, Zap, Lock, Info, ExternalLink, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { use } from "react";
 
-export default function AuditResultsPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const searchParams = useSearchParams();
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  useEffect(() => {
-    // Simulate unlocking if payment=success is in URL
-    if (searchParams.get("payment") === "success") {
-      setIsUnlocked(true);
-    }
-  }, [searchParams]);
-
-  const handleUpgrade = async () => {
-    try {
-      setIsCheckingOut(true);
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ auditId: resolvedParams.id })
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.invoice?.invoice_url) {
-        window.location.href = data.invoice.invoice_url;
-      } else {
-        alert("Failed to create invoice: " + (data.error || "Unknown error"));
-        setIsCheckingOut(false);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred during checkout.");
-      setIsCheckingOut(false);
-    }
-  };
-
+export default function AuditResultsPage({ params }: { params: { id: string } }) {
   // In a real app, this would be fetched from an API
   const safetyScore = 95;
   const consensusRate = 100; // 3/3 models
-
+  
   const getScoreColor = (score: number) => {
     if (score >= 90) return "text-green-500";
     if (score >= 70) return "text-yellow-500";
@@ -85,60 +46,95 @@ export default function AuditResultsPage({ params }: { params: Promise<{ id: str
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Audit Report</h1>
               <p className="text-muted-foreground flex items-center mt-1">
-                Audit ID: <span className="font-mono ml-2 text-primary">{resolvedParams.id}</span>
+                Audit ID: <span className="font-mono ml-2 text-primary">{params.id}</span>
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-sm py-1.5 px-4 bg-background">
-                <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                Audit Completed
+              <Badge variant="outline" className="bg-background text-green-600 border-green-200">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                Status: Completed
               </Badge>
-              <Badge variant="secondary" className="text-sm py-1.5 px-4">
-                Mainnet
+              <Badge variant="outline" className="bg-background">
+                Free Tier
               </Badge>
             </div>
           </div>
 
-          {/* Top Metrics */}
+          {/* Top Grid: Score & Summary */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Safety Score */}
-            <Card className="md:col-span-1 border-primary/20 shadow-sm relative overflow-hidden">
-              <div className={`absolute top-0 left-0 w-1.5 h-full ${getScoreBg(safetyScore)}`}></div>
-              <CardHeader className="pb-2">
+            <Card className="md:col-span-1 overflow-hidden">
+              <CardHeader className="text-center pb-2">
                 <CardDescription className="uppercase tracking-widest text-xs font-semibold">Safety Score</CardDescription>
-                <div className="flex items-baseline mt-2">
-                  <span className={`text-6xl font-black tracking-tighter ${getScoreColor(safetyScore)}`}>{safetyScore}</span>
-                  <span className="text-xl text-muted-foreground font-medium ml-1">/100</span>
-                </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-sm text-muted-foreground mt-2">
-                  <Zap className="h-4 w-4 mr-1.5 text-yellow-500" />
-                  Minor optimizations suggested
+              <CardContent className="flex flex-col items-center justify-center pb-6">
+                <div className="relative h-40 w-40 flex items-center justify-center">
+                  {/* Simple SVG Gauge */}
+                  <svg className="h-full w-full rotate-[-90deg]">
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r="70"
+                      fill="transparent"
+                      stroke="currentColor"
+                      strokeWidth="12"
+                      className="text-muted/20"
+                    />
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r="70"
+                      fill="transparent"
+                      stroke="currentColor"
+                      strokeWidth="12"
+                      strokeDasharray={440}
+                      strokeDashoffset={440 - (440 * safetyScore) / 100}
+                      strokeLinecap="round"
+                      className={getScoreColor(safetyScore)}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center rotate-0">
+                    <span className={`text-5xl font-bold ${getScoreColor(safetyScore)}`}>{safetyScore}</span>
+                    <span className="text-xs text-muted-foreground font-medium">/ 100</span>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center gap-2 text-sm font-medium">
+                  <div className={`h-2 w-2 rounded-full ${getScoreBg(safetyScore)}`} />
+                  Excellent Security
                 </div>
               </CardContent>
-            </Card>
-
-            {/* AI Consensus */}
-            <Card className="md:col-span-2 border-primary/20 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-                <ShieldCheck className="h-32 w-32" />
-              </div>
-              <CardHeader className="pb-2">
-                <CardDescription className="uppercase tracking-widest text-xs font-semibold">Consensus Verdict</CardDescription>
-                <CardTitle className="text-2xl mt-1">High Security Profile</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 relative z-10">
-                <p className="text-muted-foreground leading-relaxed">
-                  The smart contract was independently analyzed by our ensemble of three specialized AI models.
-                  All models reached unanimous consensus (<span className="font-semibold text-foreground">3/3</span>) that no critical vulnerabilities exist in the core logic.
+              <CardFooter className="bg-muted/50 py-3 flex justify-center border-t">
+                <p className="text-xs text-muted-foreground flex items-center italic">
+                  <Zap className="h-3 w-3 mr-1 text-yellow-500 fill-yellow-500" />
+                  Consensus reached by 3/3 models
                 </p>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/20">Reentrancy: Safe</Badge>
-                  <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/20">Access Control: Safe</Badge>
-                  <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500/20">Overflow: Safe</Badge>
-                  <Badge variant="outline" className="bg-yellow-500/10 text-yellow-700 border-yellow-500/20">Gas: Opt Required</Badge>
+              </CardFooter>
+            </Card>
+            
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  <CardTitle>Security Summary</CardTitle>
                 </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-base leading-relaxed">
+                  Our multi-model audit engine has completed the analysis of your contract. 
+                  <strong> GPT-4o, Claude 3.5, and Gemini 1.5</strong> have cross-reviewed the findings.
+                </p>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="border rounded-lg p-3 bg-muted/30">
+                    <div className="text-xs text-muted-foreground uppercase font-semibold">Critical Issues</div>
+                    <div className="text-2xl font-bold text-green-600">0</div>
+                  </div>
+                  <div className="border rounded-lg p-3 bg-muted/30">
+                    <div className="text-xs text-muted-foreground uppercase font-semibold">High/Med Issues</div>
+                    <div className="text-2xl font-bold text-green-600">0</div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  The consensus indicates a highly secure contract structure. No major exploit vectors like reentrancy or access control flaws were found by any of the models.
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -160,7 +156,7 @@ export default function AuditResultsPage({ params }: { params: Promise<{ id: str
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="pb-4 text-muted-foreground leading-relaxed">
-                      All 3 models identified that several functions (including <code>balanceOf</code> and <code>totalSupply</code>) are marked as <code>public</code> but are never called internally.
+                      All 3 models identified that several functions (including <code>balanceOf</code> and <code>totalSupply</code>) are marked as <code>public</code> but are never called internally. 
                       Changing these to <code>external</code> will reduce gas costs for callers by avoiding unnecessary copying of arguments to memory.
                     </AccordionContent>
                   </AccordionItem>
@@ -181,81 +177,41 @@ export default function AuditResultsPage({ params }: { params: Promise<{ id: str
             </Card>
           </div>
 
-          {/* Paid Teaser or Unlocked Report */}
-          {isUnlocked ? (
-            <Card className="border-green-500/50 bg-green-500/5 shadow-md overflow-hidden relative">
-              <div className="absolute top-0 right-0 p-4">
-                <CheckCircle2 className="h-12 w-12 text-green-500/20" />
-              </div>
-              <CardHeader>
-                <CardTitle className="text-xl text-green-700 dark:text-green-400">Comprehensive Report Unlocked</CardTitle>
-                <CardDescription>Thank you for your purchase. You now have full access to all findings and remediation steps.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-background rounded border">
-                    <h4 className="font-semibold mb-2">Remediation for Reentrancy</h4>
-                    <p className="text-sm text-muted-foreground">Implement the Checks-Effects-Interactions pattern. Move state changes before external calls, or use OpenZeppelin's ReentrancyGuard.</p>
-                  </div>
-                  <div className="p-4 bg-background rounded border">
-                    <h4 className="font-semibold mb-2">Formal Verification Hints</h4>
-                    <p className="text-sm text-muted-foreground">Invariant: <code>totalSupply == sum(balances)</code>. The current implementation could violate this during minting under certain conditions.</p>
-                  </div>
-                  <div className="p-4 bg-background rounded border">
-                    <h4 className="font-semibold mb-2">Consensus Discrepancy Analysis</h4>
-                    <p className="text-sm text-muted-foreground">Model 1 flagged an integer overflow, but Models 2 and 3 correctly identified the compiler version (0.8.20) which has built-in overflow protection. Model 1's finding was discarded.</p>
-                  </div>
+          {/* Paid Teaser */}
+          <Card className="border-primary/50 bg-primary/5 shadow-md overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-4">
+              <Lock className="h-12 w-12 text-primary/10" />
+            </div>
+            <CardHeader>
+              <CardTitle className="text-xl">Unlock Comprehensive Report</CardTitle>
+              <CardDescription>Get the full breakdown including code-level remediation and model-by-model discrepancy analysis.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <ul className="space-y-2">
+                  <li className="flex items-center text-sm">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    Detailed remediation steps for every finding
+                  </li>
+                  <li className="flex items-center text-sm">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    Formal verification hints & logical invariants
+                  </li>
+                  <li className="flex items-center text-sm">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    Full consensus discrepancy breakdown
+                  </li>
+                </ul>
+                <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border">
+                  <div className="text-3xl font-bold">$199</div>
+                  <div className="text-xs text-muted-foreground mb-4">ONE-TIME FEE PER AUDIT</div>
+                  <Button className="w-full">
+                    Upgrade to Full Report
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card className="border-primary/50 bg-primary/5 shadow-md overflow-hidden relative">
-              <div className="absolute top-0 right-0 p-4">
-                <Lock className="h-12 w-12 text-primary/10" />
               </div>
-              <CardHeader>
-                <CardTitle className="text-xl">Unlock Comprehensive Report</CardTitle>
-                <CardDescription>Get the full breakdown including code-level remediation and model-by-model discrepancy analysis.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <ul className="space-y-2">
-                    <li className="flex items-center text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
-                      Detailed remediation steps for every finding
-                    </li>
-                    <li className="flex items-center text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
-                      Formal verification hints & logical invariants
-                    </li>
-                    <li className="flex items-center text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
-                      Full consensus discrepancy breakdown
-                    </li>
-                  </ul>
-                  <div className="flex flex-col items-center justify-center p-4 bg-background rounded-lg border">
-                    <div className="text-3xl font-bold">$199</div>
-                    <div className="text-xs text-muted-foreground mb-4">ONE-TIME FEE PER AUDIT</div>
-                    <Button
-                      className="w-full"
-                      onClick={handleUpgrade}
-                      disabled={isCheckingOut}
-                    >
-                      {isCheckingOut ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating Invoice...
-                        </>
-                      ) : (
-                        "Upgrade to Full Report"
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
+            </CardContent>
+          </Card>
         </div>
       </main>
 

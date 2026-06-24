@@ -59,7 +59,7 @@ export default function SubmitPage() {
             <ArrowLeft className="mr-1 h-4 w-4" />
             Back to Home
           </Link>
-
+          
           <Card className="shadow-lg border-primary/10">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl font-bold">Start New Audit</CardTitle>
@@ -70,9 +70,9 @@ export default function SubmitPage() {
             <CardContent className="space-y-4 pt-4">
               <div className="space-y-2">
                 <Label htmlFor="address">Contract Address</Label>
-                <Input
-                  id="address"
-                  placeholder="0x..."
+                <Input 
+                  id="address" 
+                  placeholder="0x..." 
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   disabled={isLoading}
@@ -81,8 +81,8 @@ export default function SubmitPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="network">Network</Label>
-                <select
-                  id="network"
+                <select 
+                  id="network" 
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={network}
                   onChange={(e) => setNetwork(e.target.value)}
@@ -97,8 +97,8 @@ export default function SubmitPage() {
               </div>
             </CardContent>
             <CardFooter className="pt-4">
-              <Button
-                className="w-full h-12 text-base font-semibold"
+              <Button 
+                className="w-full h-12 text-base font-semibold" 
                 onClick={handleSubmit}
                 disabled={isLoading}
               >
@@ -113,9 +113,9 @@ export default function SubmitPage() {
               </Button>
             </CardFooter>
           </Card>
-
+          
           <p className="text-center text-xs text-muted-foreground">
-            Audits take ~30 seconds to complete.
+            Audits take ~30 seconds to complete. 
             Free tier includes safety score and top 3 hazards.
           </p>
         </div>

@@ -50,12 +50,12 @@ export async function fetchContractSource(address: string): Promise<FetchResult>
     }
 
     let sourceCode = result.SourceCode;
-
+    
     // Etherscan returns SourceCode in different formats:
     // 1. Single file: string
     // 2. Multiple files (JSON): {{ ... }}
     // 3. Multiple files (standard JSON input): { ... }
-
+    
     // Clean up double braces if present
     if (sourceCode.startsWith('{{') && sourceCode.endsWith('}}')) {
       sourceCode = sourceCode.slice(1, -1);
